@@ -1,0 +1,28 @@
+{
+  "name": "@webhooks/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@webhooks/common": "workspace:*",
+    "electrodb": "^3.5.2",
+    "standardwebhooks": "^1.0.0"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.962.0",
+    "@aws-sdk/client-kms": "^3.962.0",
+    "@aws-sdk/client-sfn": "^3.962.0",
+    "@aws-sdk/client-sqs": "^3.962.0",
+    "@aws-sdk/lib-dynamodb": "^3.962.0",
+    "@types/aws-lambda": "^8.10.145",
+    "typescript": "^5.6.3"
+  }
+}

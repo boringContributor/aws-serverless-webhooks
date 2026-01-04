@@ -1,0 +1,29 @@
+{
+  "name": "aws-serverless-webhooks",
+  "version": "0.1.0",
+  "description": "Self-hosted serverless webhooks on AWS",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "deploy": "turbo run deploy",
+    "destroy": "cd packages/cdk && pnpm run destroy",
+    "synth": "cd packages/cdk && pnpm run synth"
+  },
+  "keywords": [
+    "serverless",
+    "aws",
+    "cdk",
+    "webhooks",
+    "self-hosted"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.10.4",
+    "turbo": "^2.7.2",
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "pnpm@10.26.2"
+}

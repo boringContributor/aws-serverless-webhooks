@@ -1,0 +1,24 @@
+{
+  "name": "@webhooks/infra",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "deploy": "cdk deploy --all --require-approval never",
+    "destroy": "cdk destroy --all",
+    "synth": "cdk synth",
+    "diff": "cdk diff",
+    "cdk": "cdk"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.117.0",
+    "constructs": "^10.3.0",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.4",
+    "aws-cdk": "^2.117.0",
+    "esbuild": "^0.19.12",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,11 @@
+{
+	"extends": "@webhooks/common/base.json",
+	"include": ["."],
+	"exclude": ["node_modules"],
+	"compilerOptions": {
+		"noEmit": true,
+		"moduleResolution": "bundler",
+		"esModuleInterop": true,
+		"resolveJsonModule": true
+	}
+  }

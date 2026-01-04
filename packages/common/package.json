@@ -1,0 +1,17 @@
+{
+    "name": "@webhooks/common",
+    "version": "0.0.0",
+    "private": true,
+    "license": "MIT",
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@aws-lambda-powertools/logger": "^2.9.0",
+        "zod": "4.3.2"
+    },
+    "devDependencies": {
+        "@tsconfig/node24": "^24.0.3",
+        "@types/node": "^24.0.0"
+    }
+}

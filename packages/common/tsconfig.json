@@ -1,0 +1,10 @@
+{
+	"extends": "./base.json",
+	"include": ["."],
+	"exclude": ["node_modules"],
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"noEmit": true
+	}
+  }
