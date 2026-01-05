@@ -3,13 +3,6 @@ import {
 } from "electrodb";
 import { ddb } from "../aws-clients";
 
-/**
- * Webhook entity - single table design
- * Query patterns:
- * 1. Get webhook by tenant + ID (PK: tenant_id, SK: webhook_id)
- * 2. List all webhooks for a tenant (PK: tenant_id)
- * 3. Get webhook by webhook_id only (GSI1: webhook_id) - optional for SQS consumer
- */
 export const WebhookEntity = new Entity({
 	model: {
 		entity: "webhook",

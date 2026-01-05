@@ -1,0 +1,51 @@
+{
+  "name": "@webhooks/client",
+  "version": "0.0.1",
+  "description": "JavaScript client library for the webhooks API",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "webhooks",
+    "sdk",
+    "client"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "typescript": "tsc",
+    "typegen": "openapi read ../functions/openapi.yml --json > src/openapi.json && openapi typegen src/openapi.json --client > src/openapi.d.ts && openapi read --json src/openapi.json --strip openapi_client_axios > src/openapi-runtime.json",
+    "prepublishOnly": "pnpm run typegen && pnpm run build",
+    "lint": "pnpm exec eslint src"
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "axios": "^1.0.0 || >=0.25.0 <1.0.0"
+  },
+  "dependencies": {
+    "openapi-client-axios": "^7.8.0"
+  },
+  "devDependencies": {
+    "axios": "^1.11.0",
+    "openapicmd": "^2.7.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.0",
+    "vite-plugin-dts": "^4.5.4"
+  }
+}
