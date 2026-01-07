@@ -47,8 +47,7 @@ The included example UI provides a visual interface for managing webhook endpoin
 
 - **API Gateway** - REST API for webhook management
 - **DynamoDB** - Webhook configuration and delivery logs
-- **Step Functions** - Durable webhook delivery with retries
-- **EventBridge** - Event routing and integration
+- **Durable Functions** - Durable webhook delivery with retries
 - **Lambda** - API handlers and webhook dispatch
 
 ## Project Structure
