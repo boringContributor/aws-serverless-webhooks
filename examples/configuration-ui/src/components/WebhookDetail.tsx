@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
 } from './ui/alert-dialog'
 import { useState } from 'react'
-import { ArrowLeft, Copy, Eye, EyeOff, MoreVertical, FileText } from 'lucide-react'
+import { ArrowLeft, Copy, Eye, EyeOff, MoreVertical } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +23,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
+import { toast } from 'sonner'
 import type { Paths } from '@webhooks/client'
+import { EventsList } from './EventsList'
 
 interface WebhookDetailProps {
   webhookId: string
@@ -79,7 +81,7 @@ export const WebhookDetail = ({ webhookId, onBack }: WebhookDetailProps) => {
 
   const handleRotateSecret = () => {
     // TODO: Implement rotate secret API call
-    alert('Secret rotation not yet implemented')
+    toast.info('Secret rotation not yet implemented')
     setIsRotateDialogOpen(false)
   }
 
@@ -157,7 +159,7 @@ export const WebhookDetail = ({ webhookId, onBack }: WebhookDetailProps) => {
                     variant="ghost"
                     size="sm"
                     onClick={() => webhook.endpoint && copyToClipboard(webhook.endpoint, 'endpoint')}
-                    className="h-8 w-8 p-0"
+                    className="h-8 w-8 p-0 cursor-pointer"
                   >
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -166,7 +168,7 @@ export const WebhookDetail = ({ webhookId, onBack }: WebhookDetailProps) => {
               </div>
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
-                  <button className="p-1.5 hover:bg-zinc-800/60 rounded transition-all">
+                  <button className="p-1.5 hover:bg-zinc-800/60 rounded transition-all cursor-pointer">
                     <MoreVertical className="h-5 w-5" />
                   </button>
                 </DropdownMenuTrigger>
@@ -232,6 +234,7 @@ export const WebhookDetail = ({ webhookId, onBack }: WebhookDetailProps) => {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowSecret(!showSecret)}
+                className="cursor-pointer"
               >
                 {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
@@ -239,6 +242,7 @@ export const WebhookDetail = ({ webhookId, onBack }: WebhookDetailProps) => {
                 variant="outline"
                 size="sm"
                 onClick={() => webhook.secret && copyToClipboard(webhook.secret, 'secret')}
+                className="cursor-pointer"
               >
                 <Copy className="h-4 w-4" />
               </Button>
@@ -249,35 +253,32 @@ export const WebhookDetail = ({ webhookId, onBack }: WebhookDetailProps) => {
 
         {/* Webhook Events Card */}
         <Card>
-          <CardHeader>
-            <CardTitle>Webhook Events</CardTitle>
-            <CardDescription>
-              History of events sent to this endpoint
-            </CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Webhook Events</CardTitle>
+              <CardDescription>
+                History of events sent to this endpoint
+              </CardDescription>
+            </div>
+            <Button
+              onClick={async () => {
+                try {
+                  const { dispatchWebhook } = await import('../api/api')
+                  await dispatchWebhook()
+                  toast.success('Test event dispatched successfully!')
+                } catch (err) {
+                  console.error('Failed to dispatch test event:', err)
+                  toast.error('Failed to dispatch test event')
+                }
+              }}
+              size="sm"
+              className="cursor-pointer"
+            >
+              Send Test Event
+            </Button>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <FileText className="w-12 h-12 text-muted mb-4" />
-              <p className="text-muted-foreground text-sm font-medium">No webhook events yet</p>
-              <p className="text-muted-foreground text-xs mt-2 mb-6">
-                Events will appear here once webhooks are triggered
-              </p>
-              <Button
-                onClick={async () => {
-                  try {
-                    const { dispatchWebhook } = await import('../api/api')
-                    await dispatchWebhook()
-                    alert('Test event dispatched successfully!')
-                  } catch (err) {
-                    console.error('Failed to dispatch test event:', err)
-                    alert('Failed to dispatch test event')
-                  }
-                }}
-                variant="outline"
-              >
-                Dispatch Test Event
-              </Button>
-            </div>
+            <EventsList webhookId={webhookId} />
           </CardContent>
         </Card>
       </div>

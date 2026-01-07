@@ -34,6 +34,10 @@ api.register({
 		(await import('./api')).updateWebhookConfig(...params),
 	rotateWebhookSecret: async (...params) =>
 		(await import('./api')).rotateWebhookSecret(...params),
+	listEvents: async (...params) =>
+		(await import('./api')).listEvents(...params),
+	getEventById: async (...params) =>
+		(await import('./api')).getEventById(...params),
 });
 
 api.init();

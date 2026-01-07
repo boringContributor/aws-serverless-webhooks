@@ -22,8 +22,6 @@ export class WebhookApi extends Construct {
   constructor(scope: Construct, id: string, props: WebhookApiProps) {
     super(scope, id);
 
-
-    // API handler Lambda
     this.webhookLambda = new NodejsFunction(this, 'ApiHandler', {
       runtime: lambda.Runtime.NODEJS_24_X,
       architecture: lambda.Architecture.ARM_64,
@@ -79,13 +77,11 @@ export class WebhookApi extends Construct {
       ),
     });
 
-    // Grant API handler permissions
     props.storage.configTable.grantReadWriteData(this.webhookLambda);
     props.storage.eventsTable.grantReadData(this.webhookLambda);
     props.storage.secretKey.grantEncryptDecrypt(this.webhookLambda);
     props.delivery.queue.grantSendMessages(this.webhookLambda);
 
-    // Webhook Dispatcher Lambda (for EventBridge integration)
     this.webhookDispatcherLambda = new NodejsFunction(this, 'DispatcherFunction', {
       runtime: lambda.Runtime.NODEJS_24_X,
       architecture: lambda.Architecture.ARM_64,
@@ -99,7 +95,6 @@ export class WebhookApi extends Construct {
       logRetention: RetentionDays.ONE_WEEK,
     });
 
-    // Grant dispatcher permissions
     props.storage.configTable.grantReadData(this.webhookDispatcherLambda);
     props.delivery.queue.grantSendMessages(this.webhookDispatcherLambda);
 

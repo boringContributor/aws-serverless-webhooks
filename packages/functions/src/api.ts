@@ -128,3 +128,60 @@ export const dispatchWebhook: OperationHandler<'dispatchWebhook'> = async (c) =>
     body: result
   });
 }
+
+export const listEvents: OperationHandler<'listEvents'> = async (c) => {
+  const webhook_id = c.request.params.webhook_id;
+  const limit = c.request.query.limit ?? 20;
+  const cursor = c.request.query.cursor as string | undefined;
+
+  const tenant_id = 'from jwt'; // TODO: Extract from JWT token
+
+  const webhook = await WebhookService.getWebhook({
+    tenant_id,
+    webhook_id
+  });
+
+  if (!webhook.data) {
+    return toApiResponse({
+      statusCode: 404,
+      body: { error: 'Webhook not found' }
+    });
+  }
+
+  const result = await WebhookService.listEvents({
+    tenant_id,
+    webhook_id,
+    limit,
+    cursor
+  });
+
+  return toApiResponse({
+    statusCode: 200,
+    body: result
+  });
+}
+
+export const getEventById: OperationHandler<'getEventById'> = async (c) => {
+  const webhook_id = c.request.params.webhook_id;
+  const event_id = c.request.params.event_id;
+
+  const tenant_id = 'from jwt'; // TODO: Extract from JWT token
+
+  const result = await WebhookService.getEventById({
+    tenant_id,
+    webhook_id,
+    event_id
+  });
+
+  if (!result.data) {
+    return toApiResponse({
+      statusCode: 404,
+      body: { error: 'Event not found' }
+    });
+  }
+
+  return toApiResponse({
+    statusCode: 200,
+    body: result
+  });
+}

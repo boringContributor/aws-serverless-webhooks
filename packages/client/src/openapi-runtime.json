@@ -84,6 +84,41 @@
         },
         "responses": {}
       }
+    },
+    "/webhooks/{webhook_id}/events": {
+      "get": {
+        "operationId": "listEvents",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WebhookId"
+          },
+          {
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "name": "cursor",
+            "in": "query"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/webhooks/{webhook_id}/events/{event_id}": {
+      "get": {
+        "operationId": "getEventById",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WebhookId"
+          },
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
     }
   },
   "components": {
