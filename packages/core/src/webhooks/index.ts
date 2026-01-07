@@ -1,12 +1,9 @@
 import { randomUUID } from "node:crypto"
-import { WebhookEntity } from "./index.db"
+import { CreateEventItem, WebhookEntity, WebhookEvent } from "./index.db"
 import { Webhook } from 'standardwebhooks'
 import { generateWebhookSecret, encryptSecret, decryptSecret } from './kms'
 import { sqs } from "../aws-clients"
 
-/**
- * Create a new webhook configuration
- */
 export const createWebhook = async (params: {
     tenant_id: string,
     endpoint: string,
@@ -46,9 +43,6 @@ export const createWebhook = async (params: {
     };
 }
 
-/**
- * Get a webhook by ID
- */
 export const getWebhook = async (params: {
     tenant_id: string,
     webhook_id: string
@@ -72,18 +66,12 @@ export const getWebhook = async (params: {
     return result;
 }
 
-/**
- * List all webhooks for a tenant
- */
 export const listWebhooks = async (params: { tenant_id: string }) => {
     return await WebhookEntity.query.primary({
         tenant_id: params.tenant_id
     }).go();
 }
 
-/**
- * Update a webhook configuration
- */
 export const updateWebhook = async (params: {
     tenant_id: string,
     webhook_id: string,
@@ -109,9 +97,6 @@ export const updateWebhook = async (params: {
     }).set(updateData).go()
 }
 
-/**
- * Delete a webhook
- */
 export const deleteWebhook = async (params: {
     tenant_id: string,
     webhook_id: string
@@ -122,16 +107,11 @@ export const deleteWebhook = async (params: {
     }).go();
 }
 
-/**
- * Rotate webhook secret
- * Generates a new secret and returns it (only time the plaintext secret is returned)
- */
 export const rotateWebhookSecret = async (params: {
     tenant_id: string,
     webhook_id: string,
     updated_by: string
 }) => {
-    // Generate new secret
     const plaintextSecret = generateWebhookSecret();
 
     const kmsKeyId = process.env.WEBHOOK_SECRET_KMS_KEY_ID;
@@ -141,7 +121,6 @@ export const rotateWebhookSecret = async (params: {
 
     const encryptedSecret = await encryptSecret(plaintextSecret, kmsKeyId);
 
-    // Update the webhook with new secret
     await WebhookEntity.update({
         tenant_id: params.tenant_id,
         webhook_id: params.webhook_id
@@ -151,7 +130,6 @@ export const rotateWebhookSecret = async (params: {
         updated_by: params.updated_by
     }).go();
 
-    // Return the plaintext secret (only time it's returned unencrypted)
     return {
         webhook_id: params.webhook_id,
         secret: plaintextSecret,
@@ -263,10 +241,17 @@ export const deliverWebhook = async (params: {
         );
     }
 
+    // TODO check large response payloads
     return {
         webhook_id: params.webhook_id,
         message_id: msg_id,
         endpoint: webhook.data.endpoint,
-        status: response.status
+        status: response.status,
+        response_body: await response.text(),
+        message_payload: payload.data
     };
 }
+
+export const recordDeliveryEvent = async (input: CreateEventItem) => {
+    return WebhookEvent.create(input).go();
+}   

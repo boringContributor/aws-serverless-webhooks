@@ -12,6 +12,8 @@ import { handleErrors } from "./openapi/utils";
 const headers = {
 	"content-type": "application/json",
 	"access-control-allow-origin": "*",
+	"access-control-allow-methods": "GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS",
+	"access-control-allow-headers": "content-type, authorization, x-api-key",
 };
 import openApiYml from '../openapi.yml';
 
@@ -24,7 +26,7 @@ api.register({
 	(await import('./api')).deleteWebhookConfig(...params),
 	getWebhookConfig: async (...params) =>
 		(await import('./api')).getWebhookConfig(...params),
-	listWebhookConfigs: async (...params) =>
+	listWebhooks: async (...params) =>
 		(await import('./api')).listWebhookConfigs(...params),
 	dispatchWebhook: async (...params) =>
 		(await import('./api')).dispatchWebhook(...params),

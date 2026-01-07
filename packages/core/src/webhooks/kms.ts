@@ -3,7 +3,7 @@ import { kms } from "../aws-clients";
 
 export const generateWebhookSecret = () => {
   const randomData = randomBytes(32);
-  return `whsec_${randomData.toString('base64url')}`;
+  return `whsec_${randomData.toString('base64')}`;
 }
 
 export const encryptSecret = async (secret: string, kmsKeyId: string) => {

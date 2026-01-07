@@ -9,6 +9,7 @@
     "openapi": "openapi read openapi.yml --json > src/openapi/definition.json && openapi typegen openapi.yml --backend > src/types/openapi.d.ts"
   },
   "dependencies": {
+    "@aws/durable-execution-sdk-js": "^1.0.1",
     "@middy/core": "^6.4.5",
     "@webhooks/common": "workspace:*",
     "@webhooks/core": "workspace:*",
@@ -17,7 +18,7 @@
     "zod": "4.3.2"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.145",
+    "@types/aws-lambda": "^8.10.159",
     "@types/http-errors": "^2.0.5",
     "openapicmd": "^2.7.0",
     "typescript": "^5.6.3"
