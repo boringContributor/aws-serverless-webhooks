@@ -6,7 +6,7 @@ Open source serverless webhook-as-a-service built with AWS CDK. Similar to Svix,
 
 - **API-first design** with OpenAPI specification
 - **Type-safe client** generated from OpenAPI schema
-- **Durable webhook delivery** using AWS Step Functions
+- **Durable webhook delivery** using AWS Durable Functions
 - **Event-driven architecture** integrated with EventBridge
 - **Example configuration UI** included
 
