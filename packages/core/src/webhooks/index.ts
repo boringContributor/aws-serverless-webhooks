@@ -142,44 +142,13 @@ export const dispatchWebhookDeliveries = async (params: {
     data: unknown,
     tenant_id: string
 }) => {
-    console.log('Dispatching webhook deliveries:', {
-        tenant_id: params.tenant_id,
-        event_type: params.event_type
-    });
-
-    // First, let's see ALL webhooks for this tenant (no filtering)
-    const allWebhooks = await WebhookEntity.query.primary({
-        tenant_id: params.tenant_id
-    }).go();
-
-    console.log('All webhooks for tenant:', {
-        count: allWebhooks.data?.length || 0,
-        webhooks: allWebhooks.data?.map(w => ({
-            webhook_id: w.webhook_id,
-            status: w.status,
-            event_types: w.event_types,
-            endpoint: w.endpoint
-        }))
-    });
-
-    // Now query with filters
     const webhooks = await WebhookEntity.query.primary({
         tenant_id: params.tenant_id
     }).where(
         ({ status, event_types }, { eq, contains }) => `${eq(status, 'enabled')} AND ${contains(event_types, params.event_type)}`,
     ).go();
 
-    console.log('Filtered webhooks (enabled + matching event_type):', {
-        event_type: params.event_type,
-        count: webhooks.data?.length || 0,
-        webhooks: webhooks.data?.map(w => ({
-            webhook_id: w.webhook_id,
-            event_types: w.event_types
-        }))
-    });
-
     if (!webhooks.data || webhooks.data.length === 0) {
-        console.log('No webhooks found to dispatch');
         return { enqueued: 0, webhook_ids: [] };
     }
 
@@ -188,15 +157,10 @@ export const dispatchWebhookDeliveries = async (params: {
         throw new Error('WEBHOOK_DELIVERY_QUEUE_URL environment variable is not set');
     }
 
-    // Split into batches of 10 (SQS batch limit)
     const successfulWebhookIds: string[] = [];
-
-    console.log(`Sending ${webhooks.data.length} webhooks to SQS in batches of 10`);
 
     for (let i = 0; i < webhooks.data.length; i += 10) {
         const batch = webhooks.data.slice(i, i + 10);
-
-        console.log(`Sending batch ${Math.floor(i / 10) + 1} with ${batch.length} webhooks`);
 
         const result = await sqs.sendMessageBatch({
             QueueUrl: queueUrl,
@@ -209,12 +173,6 @@ export const dispatchWebhookDeliveries = async (params: {
                     payload: params.data,
                 })
             }))
-        });
-
-        console.log('SQS batch result:', {
-            successful: result.Successful?.length || 0,
-            failed: result.Failed?.length || 0,
-            failures: result.Failed
         });
 
         if (result.Successful) {
@@ -231,8 +189,6 @@ export const dispatchWebhookDeliveries = async (params: {
         enqueued: successfulWebhookIds.length,
         webhook_ids: successfulWebhookIds
     };
-
-    console.log('Dispatch complete:', result);
 
     return result;
 }

@@ -64,6 +64,10 @@ examples/
   configuration-ui/ - Example React UI for webhook management
 ```
 
+## Possible Contribution Topics:
+- Add Powertools Idempotency to the durable function delivery step
+- The delivery step fails after x retries. It should not fail rather forward the last error to the persistence step.
+
 ## Production Setup
 
 The default deployment has no authentication. For production use:

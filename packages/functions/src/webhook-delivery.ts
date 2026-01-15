@@ -1,7 +1,6 @@
 import { withDurableExecution, DurableContext } from '@aws/durable-execution-sdk-js';
 import { SQSBatchResponse, SQSEvent } from 'aws-lambda';
 import { WebhookService } from '@webhooks/core';
-import { logger } from '@webhooks/common/powertools';
 import { z } from 'zod';
 
 const DELIVERY_SCHEMA = z.object({
@@ -18,7 +17,7 @@ export const handler = withDurableExecution(
     const sqsEvent = payload as SQSEvent;
     const batchItemFailures: SQSBatchResponse['batchItemFailures'] = [];
 
-    logger.info(`Processing ${sqsEvent.Records.length} webhook delivery messages with durable execution`);
+    context.logger.info(`Processing ${sqsEvent.Records.length} webhook delivery messages with durable execution`);
 
     const results = await context.map(
       sqsEvent.Records,
@@ -27,7 +26,7 @@ export const handler = withDurableExecution(
           const message = DELIVERY_SCHEMA.safeParse(JSON.parse(record.body));
 
           if (!message.success) {
-            logger.error('Invalid webhook delivery message - skipping', {
+            context.logger.error('Invalid webhook delivery message - skipping', {
               error: message.error,
               recordBody: record.body
             });
@@ -42,7 +41,9 @@ export const handler = withDurableExecution(
           return { message_id: record.messageId, success: true }; // Don't retry invalid messages
         }
 
+        let attempt = 0;
         const http_response = await ctx.step('delivery', async () => {
+          attempt++;
           return await WebhookService.deliverWebhook({
             webhook_id: validated.webhook_id,
             event_type: validated.event_type,
@@ -51,7 +52,7 @@ export const handler = withDurableExecution(
           });
         }, {
           retryStrategy: (_, attemptCount) => {
-            if (attemptCount >= 5) {
+            if (attemptCount >= 2) {
               return { shouldRetry: false };
             } 
             // Exponential backoff: 2s, 4s, 8s, 16s, 32s (capped at 300s)
@@ -86,7 +87,7 @@ export const handler = withDurableExecution(
     }
 
     const successCount = recordResults.filter(r => r?.success).length;
-    logger.info(`Processed ${recordResults.length} webhooks: ${successCount} successful, ${batchItemFailures.length} failed`);
+    context.logger.info(`Processed ${recordResults.length} webhooks: ${successCount} successful, ${batchItemFailures.length} failed`);
 
     return { batchItemFailures };
   }

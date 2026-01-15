@@ -4,8 +4,9 @@
 	"exclude": ["node_modules"],
 	"compilerOptions": {
 		"noEmit": true,
-		"moduleResolution": "bundler",
+		"moduleResolution": "Bundler",
 		"esModuleInterop": true,
+		"types": ["node"],
 		"resolveJsonModule": true
 	}
   }
